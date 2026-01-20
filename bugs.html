@@ -1545,6 +1545,9 @@
 
         // Helper to determine if investigation is source-only based on notes
         function isSourceAnalysisOnly(r) {
+            // If it has repro steps, it's not source-only
+            if (r.reproductionSteps?.length) return false;
+            
             const notes = (r.notes || '').toLowerCase();
             return notes.includes('source code analysis') || 
                    notes.includes('via source analysis') ||
@@ -1553,7 +1556,7 @@
         }
 
         function isFullRepro(r) {
-            return r.reproductionSteps?.length && r.sourceCodeInvestigation && !isSourceAnalysisOnly(r);
+            return r.reproductionSteps?.length && r.sourceCodeInvestigation;
         }
 
         function isStepsOnly(r) {
