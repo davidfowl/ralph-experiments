@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" data-color-mode="dark" data-dark-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PR Review Slides</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0c10;
+            --bg-secondary: #13161d;
+            --bg-tertiary: #1c2029;
+            --bg-card: #181c24;
+            --border: #2d333b;
+            --border-muted: #21262d;
+            --text-primary: #ffffff;
+            --text-secondary: #c9d1d9;
+            --text-tertiary: #8b949e;
+            --accent: #4493f8;
+            --accent-emphasis: #1f6feb;
+            --success: #3fb950;
+            --success-subtle: rgba(46, 160, 67, 0.2);
+            --danger: #f85149;
+            --danger-subtle: rgba(248, 81, 73, 0.2);
+            --warning: #d29922;
+            --warning-subtle: rgba(187, 128, 9, 0.2);
+            --purple: #a371f7;
+            --purple-subtle: rgba(163, 113, 247, 0.2);
+            --cyan: #39c5cf;
+            --cyan-subtle: rgba(57, 197, 207, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 32px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo svg {
+            width: 36px;
+            height: 36px;
+            fill: var(--accent);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .home-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.15s;
+        }
+
+        .home-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .header-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .raw-data-link {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.15s;
+        }
+
+        .raw-data-link:hover {
+            color: var(--text-primary);
+            border-color: var(--text-secondary);
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-value.success { color: var(--success); }
+        .stat-value.danger { color: var(--danger); }
+        .stat-value.warning { color: var(--warning); }
+        .stat-value.purple { color: var(--purple); }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 6px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .filter-btn {
+            padding: 10px 18px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Slide */
+        .slide {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .slide-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .slide-header-left {
+            flex: 1;
+        }
+
+        .pr-number {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+
+        .pr-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .pr-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .pr-title a:hover {
+            color: var(--accent);
+        }
+
+        .pr-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .pr-meta svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            margin-right: 6px;
+        }
+
+        .recommendation-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .recommendation-badge.ready_to_merge { background: var(--success-subtle); color: var(--success); }
+        .recommendation-badge.needs_changes { background: var(--warning-subtle); color: var(--warning); }
+        .recommendation-badge.blocked { background: var(--danger-subtle); color: var(--danger); }
+        .recommendation-badge.approved { background: var(--success-subtle); color: var(--success); }
+
+        .slide-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            padding: 24px;
+        }
+
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            padding: 14px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-header svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-secondary);
+        }
+
+        .section-content {
+            padding: 16px 18px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .section-content ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .section-content li {
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+
+        .tag.success { background: var(--success-subtle); color: var(--success); }
+        .tag.danger { background: var(--danger-subtle); color: var(--danger); }
+        .tag.warning { background: var(--warning-subtle); color: var(--warning); }
+        .tag.purple { background: var(--purple-subtle); color: var(--purple); }
+        .tag.accent { background: rgba(68, 147, 248, 0.2); color: var(--accent); }
+
+        .status-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 0 24px 20px;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .status-item svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .evidence-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .evidence-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+        }
+
+        .evidence-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .slide-footer {
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .summary-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .file-path {
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            font-size: 13px;
+        }
+
+        /* Avatar */
+        .avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: max-content;
+            max-width: 360px;
+            z-index: 1000;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .tooltip:hover .tooltip-content {
+            display: block;
+        }
+
+        .tooltip-content::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-bottom-color: var(--border);
+        }
+
+        .tooltip-content ul {
+            margin: 0;
+            padding-left: 18px;
+            list-style: disc;
+        }
+
+        .tooltip.tooltip-left .tooltip-content {
+            left: 0;
+            transform: none;
+        }
+
+        .tooltip.tooltip-left .tooltip-content::before {
+            left: 20px;
+            transform: none;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .nav-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .page-indicator {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .keyboard-hint {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .keyboard-hint kbd {
+            background: var(--bg-tertiary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: inherit;
+            margin: 0 2px;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;
+            color: var(--text-secondary);
+        }
+
+        .loading span {
+            margin-top: 16px;
+        }
+
+        @media (max-width: 1000px) {
+            .slide-body { grid-template-columns: 1fr; }
+            .header { flex-direction: column; gap: 20px; align-items: flex-start; }
+            .app { padding: 24px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <a href="index.html" class="home-link" title="Back to dashboards">←</a>
+                <svg viewBox="0 0 16 16"><path d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z"/></svg>
+                <h1>PR Review Dashboard</h1>
+            </div>
+            <div class="header-links">
+                <a href="https://gist.githubusercontent.com/davidfowl/bb3fd3219a7ad48535ddc0518f7ba188/raw/results.json" target="_blank" class="raw-data-link">Raw JSON</a>
+            </div>
+            <div class="stats" id="stats"></div>
+        </header>
+
+        <div class="filters" id="filters"></div>
+
+        <div class="slide" id="slide">
+            <div class="loading">
+                <div class="spinner"></div>
+                <span>Loading PR data...</span>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <button class="nav-btn" id="prev" onclick="prev()">
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.751.751 0 011.042.018.751.751 0 01.018 1.042L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg>
+                Previous
+            </button>
+            <div class="page-indicator" id="page">
+                <span class="current">1</span> / <span class="total">1</span>
+            </div>
+            <button class="nav-btn" id="next" onclick="next()">
+                Next
+                <svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.751.751 0 01-1.042-.018.751.751 0 01-.018-1.042L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+            </button>
+        </nav>
+
+        <div class="text-center mt-3 f6 color-fg-subtle">
+            Press <kbd>←</kbd> <kbd>→</kbd> or <kbd>Space</kbd> to navigate
+        </div>
+    </div>
+
+    <script>
+        const URL = 'https://gist.githubusercontent.com/davidfowl/bb3fd3219a7ad48535ddc0518f7ba188/raw/results.json';
+        let data, filtered = [], idx = 0, filter = 'all';
+
+        async function load() {
+            data = await (await fetch(URL)).json();
+            filtered = data.reviews;
+            renderStats();
+            renderFilters();
+            // Check hash before initial render
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                const prNumber = parseInt(hash, 10);
+                const index = filtered.findIndex(r => r.prNumber === prNumber);
+                if (index !== -1) idx = index;
+            }
+            render();
+        }
+
+        function renderStats() {
+            const ready = data.reviews.filter(r => r.recommendation === 'ready_to_merge').length;
+            const blocked = data.reviews.filter(r => r.recommendation === 'blocked').length;
+            const waiting = data.reviews.filter(r => r.feedbackStatus?.waitingOn === 'author').length;
+            document.getElementById('stats').innerHTML = `
+                <div class="stat"><span class="stat-value">${data.reviewedCount}</span><span class="stat-label">Reviewed</span></div>
+                <div class="stat"><span class="stat-value success">${ready}</span><span class="stat-label">Ready</span></div>
+                <div class="stat"><span class="stat-value danger">${blocked}</span><span class="stat-label">Blocked</span></div>
+                <div class="stat"><span class="stat-value warning">${waiting}</span><span class="stat-label">Waiting on Author</span></div>
+            `;
+        }
+
+        function renderFilters() {
+            const recs = ['all', ...new Set(data.reviews.map(r => r.recommendation))];
+            document.getElementById('filters').innerHTML = recs.map(r => 
+                `<button class="filter-btn ${r === filter ? 'active' : ''}" onclick="setFilter('${r}')">${r === 'all' ? 'All PRs' : r.replace(/_/g, ' ')}</button>`
+            ).join('');
+        }
+
+        function setFilter(f) {
+            filter = f;
+            idx = 0;
+            filtered = f === 'all' ? data.reviews : data.reviews.filter(r => r.recommendation === f);
+            renderFilters();
+            render();
+        }
+
+        function getTempClass(temp) {
+            if (temp === 'positive') return 'positive';
+            if (temp === 'concerned' || temp === 'mixed') return 'concerned';
+            if (temp === 'negative' || temp === 'heated') return 'negative';
+            return 'neutral';
+        }
+
+        function getStalenessClass(assessment) {
+            if (assessment === 'fresh') return 'fresh';
+            if (assessment === 'stale') return 'stale';
+            return 'very-stale';
+        }
+
+        const COPILOT_ICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="#a371f7"><path d="M95.667 67.954C92.225 73.933 72.24 88.04 47.997 88.04 23.754 88.04 3.769 73.933.328 67.954c-.216-.375-.307-.796-.328-1.226V55.661c.019-.371.089-.736.226-1.081 1.489-3.738 5.386-9.166 10.417-10.623.667-1.712 1.655-4.215 2.576-6.062-.154-1.414-.208-2.872-.208-4.345 0-5.322 1.128-9.99 4.527-13.466 1.587-1.623 3.557-2.869 5.893-3.805 5.595-4.545 13.563-8.369 24.48-8.369s19.057 3.824 24.652 8.369c2.337.936 4.306 2.182 5.894 3.805 3.399 3.476 4.527 8.144 4.527 13.466 0 1.473-.054 2.931-.208 4.345.921 1.847 1.909 4.35 2.576 6.062 5.03 1.457 8.928 6.885 10.417 10.623.163.41.231.848.231 1.289v10.644c0 .504-.081 1.004-.333 1.441ZM48.686 43.993l-.3.001-1.077-.001c-.423.709-.894 1.39-1.418 2.035-3.078 3.787-7.672 5.964-14.026 5.964-6.897 0-11.952-1.435-15.123-5.032a7.886 7.886 0 0 1-.342-.419l-.39.419v26.326c5.737 3.118 18.05 8.713 31.987 8.713 13.938 0 26.251-5.595 31.988-8.713V46.96l-.39-.419s-.132.181-.342.419c-3.171 3.597-8.226 5.032-15.123 5.032-6.354 0-10.949-2.177-14.026-5.964a17.178 17.178 0 0 1-1.418-2.034h-.066l.066-.001Zm-3.94-11.733c.17-1.326.251-2.513.253-3.573v-.084c-.005-3.077-.678-5.079-1.752-6.308-1.365-1.562-4.184-2.758-10.127-2.115-6.021.652-9.386 2.146-11.294 4.098-1.847 1.889-2.818 4.715-2.818 9.272 0 4.842.698 7.703 2.232 9.443 1.459 1.655 4.332 3.001 10.625 3.001 4.837 0 7.603-1.573 9.371-3.749 1.899-2.336 2.967-5.759 3.51-9.985Zm6.503 0c.543 4.226 1.611 7.649 3.51 9.985 1.768 2.176 4.533 3.749 9.371 3.749 6.292 0 9.165-1.346 10.624-3.001 1.535-1.74 2.232-4.601 2.232-9.443 0-4.557-.97-7.383-2.817-9.272-1.908-1.952-5.274-3.446-11.294-4.098-5.943-.643-8.763.553-10.127 2.115-1.074 1.229-1.747 3.231-1.752 6.308v.084c.002 1.06.083 2.247.253 3.573Zm-2.563 11.734h.066l-.066-.001v.001Z"/><path d="M38.5 55.75a3.5 3.5 0 0 1 3.5 3.5v8.5a3.5 3.5 0 1 1-7 0v-8.5a3.5 3.5 0 0 1 3.5-3.5Zm19 0a3.5 3.5 0 0 1 3.5 3.5v8.5a3.5 3.5 0 1 1-7 0v-8.5a3.5 3.5 0 0 1 3.5-3.5Z"/></svg>')}`;
+
+        function getAvatarUrl(author) {
+            if (author === 'app/copilot-swe-agent' || author.includes('copilot')) {
+                return COPILOT_ICON;
+            }
+            return 'https://avatars.githubusercontent.com/' + author + '?size=40';
+        }
+
+        function getRecommendationState(rec) {
+            switch(rec) {
+                case 'ready_to_merge': return 'State--merged';
+                case 'blocked': return 'State--draft';
+                case 'needs_followup': return 'State--open';
+                case 'needs_discussion': return 'State--open';
+                default: return 'State--open';
+            }
+        }
+
+        function getQualityLabel(summary) {
+            switch(summary) {
+                case 'high': return 'Label--success';
+                case 'medium': return 'Label--attention';
+                case 'low': return 'Label--danger';
+                default: return 'Label--secondary';
+            }
+        }
+
+        function render() {
+            if (!filtered.length) {
+                document.getElementById('slide').innerHTML = '<div class="loading">No PRs match this filter</div>';
+                updateNav();
+                return;
+            }
+
+            const r = filtered[idx];
+            const staleness = r.staleness || {};
+            const temp = r.commentTemperature || {};
+            const feedback = r.feedbackStatus || {};
+            const unresolved = r.unresolvedComments || {};
+            const source = r.sourceAnalysis || {};
+
+            document.getElementById('slide').innerHTML = `
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="pr-number">#${r.prNumber}</div>
+                        <div class="pr-title"><a href="${r.url}" target="_blank">${r.title}</a></div>
+                        <div class="pr-meta">
+                            <span>
+                                <img src="${getAvatarUrl(r.author)}" class="avatar" alt="${r.author}">
+                                ${r.author}
+                            </span>
+                            ${r.author.includes('copilot') ? '<span class="tag purple">🤖 Copilot</span>' : (r.automated?.isAutomated ? '<span class="tag purple">🤖 Bot</span>' : '')}
+                            ${r.labels?.includes('community-contribution') ? '<span class="tag success">Community</span>' : ''}
+                            <span class="tag accent">${r.baseRef}</span>
+                            <span class="tag ${r.quality?.summary === 'high' ? 'success' : r.quality?.summary === 'low' ? 'danger' : 'warning'} tooltip">
+                                Quality: ${r.quality?.summary || 'unknown'}
+                                <div class="tooltip-content">
+                                    <strong>Quality Issues</strong>
+                                    ${(r.quality?.issues?.length) ? `<ul>${r.quality.issues.map(i => `<li>${i}</li>`).join('')}</ul>` : '<p>No issues detected</p>'}
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                    <span class="recommendation-badge ${r.recommendation}">${r.recommendation.replace(/_/g, ' ')}</span>
+                </div>
+
+                <div class="status-row">
+                    <span class="status-item">
+                        <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 110 16A8 8 0 018 0zM1.5 8a6.5 6.5 0 1013 0 6.5 6.5 0 00-13 0zm7-3.25v2.992l2.028.812a.75.75 0 01-.557 1.392l-2.5-1A.751.751 0 017 8.25v-3.5a.75.75 0 011.5 0z"/></svg>
+                        ${staleness.daysSinceUpdate ?? 0}d ago · ${staleness.assessment || 'fresh'}
+                    </span>
+                    <span class="status-item tooltip tooltip-left">
+                        <svg viewBox="0 0 16 16"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm4 0c0 .828-.448 1.5-1 1.5s-1-.672-1-1.5S9.448 5 10 5s1 .672 1 1.5zM4.255 12a.75.75 0 011.049-.07 4.514 4.514 0 005.392 0 .75.75 0 11.917 1.188 6.014 6.014 0 01-7.189 0 .75.75 0 01-.169-1.118z"/></svg>
+                        ${temp.overall || 'neutral'}
+                        <div class="tooltip-content">
+                            <strong>Comment Signals</strong>
+                            ${(temp.signals?.length) ? `<ul>${temp.signals.map(s => `<li>${s}</li>`).join('')}</ul>` : '<p>No notable signals</p>'}
+                        </div>
+                    </span>
+                    ${feedback.waitingOn ? `<span class="status-item">Waiting on: <span class="tag warning">${feedback.waitingOn}</span></span>` : ''}
+                    <span class="status-item">
+                        <svg viewBox="0 0 16 16"><path d="M1 2.75C1 1.784 1.784 1 2.75 1h10.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0113.25 12H9.06l-2.573 2.573A1.458 1.458 0 014 13.543V12H2.75A1.75 1.75 0 011 10.25Zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h2a.75.75 0 01.75.75v2.19l2.72-2.72a.749.749 0 01.53-.22h4.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25Z"/></svg>
+                        Unresolved: <strong>${unresolved.count ?? 0}</strong>
+                    </span>
+                </div>
+
+                <div class="slide-body">
+                    <div>
+                        ${source.summary ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <svg viewBox="0 0 16 16"><path d="M4.72 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.751.751 0 01-1.042-.018.751.751 0 01-.018-1.042L8.19 8 4.72 4.53a.75.75 0 010-1.06z"/></svg>
+                                    Source Analysis
+                                </div>
+                                <div class="section-content">
+                                    <p>${source.summary}</p>
+                                    ${source.files?.length ? source.files.slice(0,3).map(f => `<div style="margin-top:12px;padding:12px;background:var(--bg-tertiary);border-radius:8px;"><span class="file-path" style="color:var(--accent)">${f.path}</span><br><small>${f.notes}</small></div>`).join('') : ''}
+                                </div>
+                            </div>` : ''}
+                        <div class="section">
+                            <div class="section-header">
+                                <svg viewBox="0 0 16 16"><path d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm7.251 10.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574zM8.755 4.75l-.004 7.322a3.752 3.752 0 011.992-.572H14.5v-9h-3.495a2.25 2.25 0 00-2.25 2.25z"/></svg>
+                                Components
+                            </div>
+                            <div class="section-content">
+                                ${r.scope?.components?.map(c => `<span class="tag accent">${c}</span>`).join('') || 'None'}
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-header">
+                                <svg viewBox="0 0 16 16"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.751.751 0 00-.018-1.042.751.751 0 00-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 00-1.042.018.751.751 0 00-.018 1.042l2 2a.75.75 0 001.06 0l4.5-4.5z"/></svg>
+                                Checks
+                            </div>
+                            <div class="section-content">
+                                <span class="tag ${r.checks?.summary === 'all_passed' ? 'success' : 'danger'}">
+                                    ${r.checks?.summary === 'all_passed' ? '✓ All checks passed' : `✗ ${r.checks?.failing?.length || 0} failing`}
+                                </span>
+                                ${r.checks?.failing?.length ? `<div style="margin-top:12px;">${r.checks.failing.slice(0,3).map(f => `<div style="padding:8px 12px;background:var(--danger-subtle);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--danger);">${f}</div>`).join('')}${r.checks.failing.length > 3 ? `<div style="color:var(--text-tertiary)">+${r.checks.failing.length - 3} more</div>` : ''}</div>` : ''}
+                            </div>
+                        </div>
+                        ${r.issues?.length ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <svg viewBox="0 0 16 16"><path d="M8 9.5a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/><path d="M8 0a8 8 0 100 16A8 8 0 008 0zM1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0z"/></svg>
+                                    Linked Issues
+                                </div>
+                                <div class="section-content">
+                                    ${r.issues.map(i => `<div style="margin-bottom:8px;"><a href="${i.url}" target="_blank" style="color:var(--accent);text-decoration:none;">#${i.number}</a> ${i.title}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+                    </div>
+                    <div>
+                        ${r.breakingChanges?.isBreaking ? `
+                            <div class="section">
+                                <div class="section-header" style="color:var(--danger)">
+                                    <svg viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575Zm1.763.707a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368Zm.53 3.996v2.5a.75.75 0 01-1.5 0v-2.5a.75.75 0 011.5 0ZM9 11a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+                                    ⚠️ Breaking Changes
+                                </div>
+                                <div class="section-content" style="background:var(--danger-subtle);border-left:3px solid var(--danger);">
+                                    ${r.breakingChanges.details || 'This PR contains breaking changes'}
+                                </div>
+                            </div>` : ''}
+                        ${r.apiChanges?.addsNewApis ? `
+                            <div class="section">
+                                <div class="section-header" style="color:var(--success)">
+                                    <svg viewBox="0 0 16 16"><path d="M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Zm4.25 10a.75.75 0 0 0 .75-.75v-1.5h1.5a.75.75 0 0 0 0-1.5h-1.5v-1.5a.75.75 0 0 0-1.5 0v1.5h-1.5a.75.75 0 0 0 0 1.5h1.5v1.5c0 .414.336.75.75.75Z"/></svg>
+                                    New APIs
+                                </div>
+                                <div class="section-content" style="background:var(--success-subtle);border-left:3px solid var(--success);">
+                                    ${r.apiChanges.details || 'Adds new public APIs'}
+                                </div>
+                            </div>` : ''}
+                        ${r.blockingIssues?.length ? `
+                            <div class="section">
+                                <div class="section-header" style="color:var(--danger)">
+                                    <svg viewBox="0 0 16 16"><path d="M4.47.22A.749.749 0 015 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 01-.22.53l-4.25 4.25A.749.749 0 0111 16H5a.749.749 0 01-.53-.22L.22 11.53A.749.749 0 010 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 018 4zm0 8a1 1 0 100-2 1 1 0 000 2z"/></svg>
+                                    Blocking Issues
+                                </div>
+                                <div class="section-content">
+                                    ${r.blockingIssues.map(b => `<div style="padding:8px 12px;background:var(--danger-subtle);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--danger);">${b}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        ${r.requiredActions?.length ? `
+                            <div class="section">
+                                <div class="section-header" style="color:var(--warning)">
+                                    <svg viewBox="0 0 16 16"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm.75-11.25v4.5a.75.75 0 01-1.5 0v-4.5a.75.75 0 011.5 0zM8 11a1 1 0 110 2 1 1 0 010-2z"/></svg>
+                                    Required Actions
+                                </div>
+                                <div class="section-content">
+                                    ${r.requiredActions.map(a => `<div style="padding:8px 12px;background:var(--warning-subtle);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--warning);">${a}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        ${r.criticalFeedback?.length ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <svg viewBox="0 0 16 16"><path d="M0 8a8 8 0 1116 0A8 8 0 010 8zm8-6.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM6.5 7.75A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                                    Feedback
+                                </div>
+                                <div class="section-content">
+                                    ${r.criticalFeedback.slice(0,3).map(f => `<div style="padding:8px 12px;background:var(--warning-subtle);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--warning);">${f}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        ${r.risks?.length ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <svg viewBox="0 0 16 16"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0114.082 15H1.918a1.75 1.75 0 01-1.543-2.575Zm1.763.707a.25.25 0 00-.44 0L1.698 13.132a.25.25 0 00.22.368h12.164a.25.25 0 00.22-.368Zm.53 3.996v2.5a.75.75 0 01-1.5 0v-2.5a.75.75 0 011.5 0ZM9 11a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+                                    Risks
+                                </div>
+                                <div class="section-content">
+                                    ${r.risks.map(k => `<div style="padding:8px 12px;background:var(--purple-subtle);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--purple);">${k}</div>`).join('')}
+                                </div>
+                            </div>` : ''}
+                        ${r.tests?.coverageGaps?.length ? `
+                            <div class="section">
+                                <div class="section-header">
+                                    <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm4.879-2.773 4.264 2.559a.25.25 0 0 1 0 .428l-4.264 2.559A.25.25 0 0 1 6 10.559V5.442a.25.25 0 0 1 .379-.215Z"/></svg>
+                                    Test Coverage Gaps
+                                </div>
+                                <div class="section-content">
+                                    <ul>${r.tests.coverageGaps.map(g => `<li>${g}</li>`).join('')}</ul>
+                                </div>
+                            </div>` : ''}
+                        ${r.docs?.needsDocs ? `
+                            <div class="section">
+                                <div class="section-header" style="color:var(--cyan)">
+                                    <svg viewBox="0 0 16 16"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"/></svg>
+                                    📚 Needs Documentation
+                                </div>
+                                <div class="section-content" style="background:var(--cyan-subtle);border-left:3px solid var(--cyan);">
+                                    ${r.docs.notes || 'This change requires documentation updates'}
+                                </div>
+                            </div>` : ''}
+                    </div>
+                </div>
+                ${r.evidence ? `<div class="evidence-section">
+                    <div class="section-header" style="margin-bottom:8px"><svg viewBox="0 0 16 16"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v12.5A1.75 1.75 0 0 1 14.25 16H1.75A1.75 1.75 0 0 1 0 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V1.75a.25.25 0 0 0-.25-.25Zm2.5 6a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5H5a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5ZM5 4.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5Z"/></svg>Evidence</div>
+                    <div class="evidence-grid">
+                        ${r.evidence.checks ? `<div class="evidence-item"><span class="evidence-label">Checks</span><span class="evidence-value">${r.evidence.checks}</span></div>` : ''}
+                        ${r.evidence.tests ? `<div class="evidence-item"><span class="evidence-label">Tests</span><span class="evidence-value">${r.evidence.tests}</span></div>` : ''}
+                        ${r.evidence.diffHighlights ? `<div class="evidence-item"><span class="evidence-label">Diff</span><span class="evidence-value">${r.evidence.diffHighlights}</span></div>` : ''}
+                        ${r.evidence.dogfood ? `<div class="evidence-item"><span class="evidence-label">Dogfood</span><span class="evidence-value">${r.evidence.dogfood}</span></div>` : ''}
+                    </div>
+                </div>` : ''}
+                <div class="slide-footer">
+                    <div class="section-header" style="margin-bottom:8px"><svg viewBox="0 0 16 16"><path d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25Zm1.75-.25a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-8.5a.25.25 0 00-.25-.25ZM3.5 6.25a.75.75 0 01.75-.75h7a.75.75 0 010 1.5h-7a.75.75 0 01-.75-.75Zm.75 2.25h4a.75.75 0 010 1.5h-4a.75.75 0 010-1.5Z"/></svg>Summary</div>
+                    <p class="summary-text">${r.summary}</p>
+                </div>
+            `;
+            updateNav();
+        }
+
+        function updateNav() {
+            document.getElementById('page').innerHTML = `<span class="current">${idx + 1}</span> / <span class="total">${filtered.length}</span>`;
+            document.getElementById('prev').disabled = idx === 0;
+            document.getElementById('next').disabled = idx >= filtered.length - 1;
+            // Update hash with current PR number (push to history)
+            if (filtered[idx]) {
+                const newHash = '#' + filtered[idx].prNumber;
+                if (window.location.hash !== newHash) {
+                    history.pushState(null, '', newHash);
+                }
+            }
+        }
+
+        function next() { if (idx < filtered.length - 1) { idx++; render(); } }
+        function prev() { if (idx > 0) { idx--; render(); } }
+
+        function goToPR(prNumber) {
+            const index = filtered.findIndex(r => r.prNumber === prNumber);
+            if (index !== -1) {
+                idx = index;
+                render();
+            }
+        }
+
+        function handleHash() {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                const prNumber = parseInt(hash, 10);
+                if (!isNaN(prNumber)) goToPR(prNumber);
+            }
+        }
+
+        window.addEventListener('hashchange', handleHash);
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+        });
+
+        load();
+    </script>
+</body>
+</html>
